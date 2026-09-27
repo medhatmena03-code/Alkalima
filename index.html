@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>الله الكلمة</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cairo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:10,15,33; --primary:217,175,100; --secondary:96,130,196;
+    --sat:env(safe-area-inset-top,0px); --sab:env(safe-area-inset-bottom,0px);
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;margin:0;overscroll-behavior:none;background:rgb(var(--bg));}
+  body{
+    font-family:'Cairo',sans-serif;color:#f1f5f9;
+    padding-top:var(--sat); padding-bottom:var(--sab);
+    background-image:
+      radial-gradient(1px 1px at 20% 30%, rgba(255,255,255,.35) 0%, transparent 100%),
+      radial-gradient(1px 1px at 70% 15%, rgba(255,255,255,.25) 0%, transparent 100%),
+      radial-gradient(1.5px 1.5px at 45% 65%, rgba(217,175,100,.35) 0%, transparent 100%),
+      radial-gradient(1px 1px at 85% 55%, rgba(255,255,255,.3) 0%, transparent 100%),
+      radial-gradient(1px 1px at 10% 80%, rgba(255,255,255,.2) 0%, transparent 100%),
+      radial-gradient(1.5px 1.5px at 60% 90%, rgba(255,255,255,.22) 0%, transparent 100%);
+    background-color:rgb(var(--bg));
+  }
+  ::-webkit-scrollbar{display:none;} *{scrollbar-width:none;}
+  .font-display{font-family:'Amiri',serif;}
+  .verse-text{font-family:'Amiri',serif;line-height:2.1;}
+  a,button{font-family:inherit;}
+  #app{display:flex;height:100vh;height:100dvh;}
+
+  /* Sidebar (desktop) */
+  #sidebar{display:none;width:15rem;flex-shrink:0;flex-direction:column;
+    border-left:1px solid rgba(255,255,255,.1); background:rgba(0,0,0,.2);
+    padding:1rem; padding-top:calc(1rem + var(--sat));}
+  #sidebar .brand{padding:1rem 1rem 1.5rem;}
+  #sidebar .brand .title{font-size:1.5rem;color:rgb(var(--primary));}
+  #sidebar .brand .sub{font-size:.75rem;color:#94a3b8;margin-top:.25rem;}
+  #sidebar nav{display:flex;flex-direction:column;gap:.4rem;}
+  .navitem{display:flex;align-items:center;gap:.5rem;padding:.75rem 1rem;border-radius:1rem;
+    font-weight:600;font-size:.9rem;color:#94a3b8;background:transparent;border:none;cursor:pointer;text-align:right;}
+  .navitem:hover{color:#e2e8f0;background:rgba(255,255,255,.05);}
+  .navitem.active{color:rgb(var(--primary));background:rgba(217,175,100,.1);}
+  .navitem svg{width:20px;height:20px;flex-shrink:0;}
+
+  /* Mobile header */
+  #mheader{display:flex;flex-shrink:0;align-items:center;justify-content:space-between;
+    padding:.75rem 1rem;background:rgba(10,15,33,.9);backdrop-filter:blur(6px);
+    border-bottom:1px solid rgba(255,255,255,.1);}
+  #mheader .title{font-size:1.25rem;color:rgb(var(--primary));line-height:1.2;}
+  #mheader .sub{font-size:.68rem;color:#94a3b8;}
+  #mheader button{width:44px;height:44px;border-radius:999px;background:transparent;border:none;color:#cbd5e1;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+  #mheader button:active{transform:scale(.95);}
+
+  #content{flex:1;min-width:0;display:flex;flex-direction:column;overflow:hidden;}
+  .page{flex:1;min-height:0;overflow-y:auto;display:none;}
+  .page.active{display:block;}
+  .wrap{max-width:48rem;margin:0 auto;padding:1.5rem 1rem 8rem;}
+  @media(min-width:768px){.wrap{padding:1.5rem 2rem 3rem;}}
+
+  /* Bottom tab bar (mobile) */
+  #tabbar{display:flex;position:fixed;bottom:0;left:0;right:0;z-index:20;
+    padding-bottom:var(--sab); background:rgba(10,15,33,.95);backdrop-filter:blur(6px);
+    border-top:1px solid rgba(255,255,255,.1);}
+  .tabitem{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+    padding:.5rem 0;font-size:11px;font-weight:600;color:#94a3b8;background:none;border:none;cursor:pointer;}
+  .tabitem.active{color:rgb(var(--primary));background:rgba(217,175,100,.1);}
+  .tabitem svg{width:22px;height:22px;}
+
+  @media(min-width:768px){
+    #sidebar{display:flex;}
+    #mheader,#tabbar{display:none;}
+  }
+
+  /* Cards */
+  .card{position:relative;border-radius:1.5rem;border:1px solid rgba(217,175,100,.2);
+    background:rgba(255,255,255,.04);backdrop-filter:blur(4px);padding:1.25rem;}
+  .card::before{content:"";position:absolute;top:-1px;right:1.5rem;left:1.5rem;height:1px;
+    background:linear-gradient(to left,transparent,rgba(217,175,100,.6),transparent);}
+  .card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:.75rem;margin-bottom:.75rem;}
+  .ref{display:inline-flex;align-items:center;gap:.4rem;border-radius:999px;background:rgba(217,175,100,.1);
+    border:1px solid rgba(217,175,100,.25);padding:.25rem .75rem;font-size:.75rem;font-weight:700;color:rgb(var(--primary));}
+  .favbtn{flex-shrink:0;width:44px;height:44px;margin:-6px;border-radius:999px;background:none;border:none;
+    display:flex;align-items:center;justify-content:center;cursor:pointer;color:#94a3b8;}
+  .favbtn:hover{background:rgba(217,175,100,.1);}
+  .favbtn svg{width:24px;height:24px;transition:.15s;}
+  .favbtn.on svg{fill:#fb7185;color:#fb7185;}
+  .vtext{font-size:1.25rem;}
+  .vtext.compact{font-size:1.1rem;}
+  @media(min-width:768px){.vtext:not(.compact){font-size:1.4rem;}}
+  .theme{margin-top:1rem;font-size:.75rem;color:rgba(96,130,196,.85);}
+  .label{margin-top:.75rem;font-size:.75rem;color:#94a3b8;}
+
+  .skel{border-radius:1.5rem;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.03);padding:1.5rem;}
+  .bar{height:1rem;border-radius:999px;background:rgba(255,255,255,.1);}
+
+  h1.pagehead{font-family:'Amiri',serif;color:rgb(var(--primary));font-size:1.4rem;margin:0 0 .25rem;}
+  @media(min-width:768px){h1.pagehead{font-size:1.7rem;}}
+  .pagesub{font-size:.75rem;color:#94a3b8;margin:0 0 1.25rem;}
+
+  .search-wrap{position:relative;margin-bottom:.75rem;}
+  .search-wrap svg{position:absolute;right:1rem;top:50%;transform:translateY(-50%);width:16px;height:16px;color:#64748b;}
+  .search-wrap input{width:100%;border-radius:1rem;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);
+    padding:.75rem 1rem .75rem 1rem;padding-right:2.75rem;font-size:.9rem;color:#f1f5f9;outline:none;}
+  .search-wrap input:focus{border-color:rgba(217,175,100,.5);}
+  .search-wrap input::placeholder{color:#64748b;}
+
+  .chips{display:flex;gap:.5rem;overflow-x:auto;padding-bottom:.5rem;margin-bottom:1rem;}
+  .chip{flex-shrink:0;padding:.4rem .9rem;border-radius:999px;font-size:.75rem;font-weight:600;
+    border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:#94a3b8;cursor:pointer;}
+  .chip.active{background:rgba(217,175,100,.15);border-color:rgba(217,175,100,.4);color:rgb(var(--primary));}
+
+  .stack{display:flex;flex-direction:column;gap:.75rem;}
+  .empty{border-radius:1.5rem;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.03);
+    padding:2rem;text-align:center;}
+  .empty .icon{font-size:1.75rem;margin-bottom:.5rem;}
+  .empty p{margin:0;font-size:.85rem;color:#94a3b8;}
+
+  /* Notify page */
+  .status-card{border-radius:1.5rem;border:1px solid rgba(217,175,100,.25);
+    background:linear-gradient(to bottom, rgba(217,175,100,.08), transparent);padding:1.5rem;margin-bottom:1.25rem;
+    display:flex;align-items:center;gap:1rem;}
+  .status-icon{width:3.5rem;height:3.5rem;flex-shrink:0;border-radius:999px;display:flex;align-items:center;justify-content:center;
+    border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.05);}
+  .status-icon.on{background:rgba(217,175,100,.15);border-color:rgba(217,175,100,.4);}
+  .status-icon svg{width:26px;height:26px;color:rgb(var(--primary));}
+  .status-icon:not(.on) svg{color:#94a3b8;}
+  .box{border-radius:1.5rem;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);padding:1.25rem;margin-bottom:1.25rem;}
+  .box label{display:block;font-size:.9rem;font-weight:600;color:#e2e8f0;margin-bottom:.75rem;}
+  .rowflex{display:flex;flex-wrap:wrap;align-items:center;gap:.75rem;}
+  input[type=time]{border-radius:1rem;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);
+    padding:.75rem 1rem;font-size:1rem;color:#f1f5f9;color-scheme:dark;}
+  .btn{padding:.75rem 1.25rem;border-radius:1rem;font-size:.85rem;font-weight:700;border:1px solid rgba(217,175,100,.4);
+    background:rgba(217,175,100,.15);color:rgb(var(--primary));cursor:pointer;}
+  .btn:disabled{opacity:.5;}
+  .btn.ghost{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.15);color:#cbd5e1;font-weight:600;}
+  .btn.wide{width:100%;display:flex;align-items:center;justify-content:center;gap:.5rem;}
+  .msg{border-radius:1rem;padding:1rem;margin-bottom:1.25rem;font-size:.75rem;line-height:1.6;border:1px solid;}
+  .msg.ok{background:rgba(52,211,153,.1);border-color:rgba(52,211,153,.25);color:#6ee7b7;}
+  .msg.warn{background:rgba(251,191,36,.1);border-color:rgba(251,191,36,.25);color:#fcd34d;}
+  .infobox{border-radius:1.5rem;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.03);padding:1.25rem;
+    display:flex;gap:.75rem;font-size:.75rem;color:#94a3b8;line-height:1.6;}
+  .infobox svg{width:16px;height:16px;flex-shrink:0;margin-top:2px;color:rgb(var(--secondary));}
+</style>
+</head>
+<body>
+<div id="app">
+  <aside id="sidebar">
+    <div class="brand">
+      <div class="title font-display">الله الكلمة</div>
+      <div class="sub">آية تضيء يومك كل صباح</div>
+    </div>
+    <nav id="sidenav"></nav>
+  </aside>
+
+  <div id="content">
+    <header id="mheader">
+      <div>
+        <div class="title font-display">الله الكلمة</div>
+        <div class="sub">آية تضيء يومك كل صباح</div>
+      </div>
+    </header>
+
+    <main style="flex:1;min-height:0;overflow:hidden;">
+      <section class="page" id="page-today"><div class="wrap" id="today-content"></div></section>
+      <section class="page" id="page-verses"><div class="wrap" id="verses-content"></div></section>
+      <section class="page" id="page-favorites"><div class="wrap" id="favorites-content"></div></section>
+      <section class="page" id="page-notify"><div class="wrap" id="notify-content"></div></section>
+    </main>
+  </div>
+
+  <nav id="tabbar"></nav>
+</div>
+
+<script>
+/* ---------- Icons ---------- */
+const ICONS = {
+  sun:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>',
+  book:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>',
+  heart:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>',
+  bell:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>',
+  bellOff:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13.73 21a1.94 1.94 0 0 1-3.4 0"/><path d="M18.63 13A17.9 17.9 0 0 1 18 8"/><path d="M6.26 6.26A5.86 5.86 0 0 0 6 8c0 7-3 9-3 9h14"/><path d="M18 8a6 6 0 0 0-9.33-5"/><line x1="1" y1="1" x2="23" y2="23"/></svg>',
+  search:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>',
+  send:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>',
+  info:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>',
+};
+
+/* ---------- Verse data (Arabic, Van Dyck public-domain text) ---------- */
+const VERSES = [
+  {n:1, reference:'يوحنا 3:16', theme:'المحبة', text:'لانه هكذا احب الله العالم حتى بذل ابنه الوحيد لكي لا يهلك كل من يؤمن به بل تكون له الحياة الابدية.'},
+  {n:2, reference:'مزمور 23:1', theme:'الطمأنينة', text:'الرب راعيّ فلا يعوزني شيء.'},
+  {n:3, reference:'فيلبي 4:13', theme:'القوة', text:'استطيع كل شيء في المسيح الذي يقويني.'},
+  {n:4, reference:'إشعياء 41:10', theme:'الشجاعة', text:'لا تخف لاني معك. لا تتلفت لاني الهك. قد ايدتك واعنتك ايضا وامسكتك بيمين برّي.'},
+  {n:5, reference:'أمثال 3:5-6', theme:'الثقة', text:'توكل على الرب بكل قلبك وعلى فهمك لا تعتمد. في كل طرقك اعرفه وهو يقوّم سبلك.'},
+  {n:6, reference:'متى 11:28', theme:'الراحة', text:'تعالوا اليّ يا جميع المتعبين والثقيلي الاحمال وانا اريحكم.'},
+  {n:7, reference:'رومية 8:28', theme:'الرجاء', text:'ونحن نعلم ان كل الاشياء تعمل معا للخير للذين يحبون الله الذين هم مدعوون حسب قصده.'},
+  {n:8, reference:'يوحنا 14:27', theme:'السلام', text:'سلاما اترك لكم. سلامي اعطيكم. ليس كما يعطي العالم اعطيكم انا. لا تضطرب قلوبكم ولا ترهب.'},
+  {n:9, reference:'مزمور 46:1', theme:'الملجأ', text:'الله لنا ملجأ وقوة عونا في الضيقات وجد شديدا.'},
+  {n:10, reference:'2كورنثوس 12:9', theme:'النعمة', text:'وقال لي تكفيك نعمتي لان قوتي في الضعف تكمل.'},
+  {n:11, reference:'يشوع 1:9', theme:'الشجاعة', text:'تشدد وتشجع لا ترهب ولا ترتعب لان الرب الهك معك حيثما تذهب.'},
+  {n:12, reference:'مزمور 34:18', theme:'العزاء', text:'الرب قريب من منسحقي القلب ويخلص منسحقي الروح.'},
+  {n:13, reference:'غلاطية 5:22', theme:'ثمر الروح', text:'واما ثمر الروح فهو محبة فرح سلام طول اناة لطف صلاح ايمان وداعة تعفف.'},
+  {n:14, reference:'1بطرس 5:7', theme:'الهم', text:'ملقين كل همكم عليه لانه هو يعتني بكم.'},
+  {n:15, reference:'إرميا 29:11', theme:'الرجاء', text:'لاني عرفت الافكار التي انا مفتكر بها عنكم يقول الرب افكار سلام لا شر لاعطيكم آخرة ورجاء.'},
+  {n:16, reference:'مزمور 118:24', theme:'الفرح', text:'هذا هو اليوم الذي صنعه الرب نتهلل ونفرح به.'},
+  {n:17, reference:'عبرانيين 11:1', theme:'الايمان', text:'واما الايمان فهو الثقة بما يرجى والايقان بامور لا ترى.'},
+  {n:18, reference:'يعقوب 1:17', theme:'العطايا', text:'كل عطية صالحة وكل موهبة تامة هي من فوق نازلة من عند ابي الانوار.'},
+  {n:19, reference:'مزمور 27:1', theme:'الشجاعة', text:'الرب نوري وخلاصي ممن اخاف. الرب حصن حياتي ممن ارتعب.'},
+  {n:20, reference:'1يوحنا 4:19', theme:'المحبة', text:'نحن نحبه لانه هو احبنا اولا.'},
+];
+
+/* ---------- Storage ---------- */
+const LS_FAV = 'alkalima_favorites';
+const LS_TIME = 'alkalima_notify_time';
+const LS_NOTIFY_ON = 'alkalima_notify_on';
+
+function getFavIds(){
+  try{ return JSON.parse(localStorage.getItem(LS_FAV) || '[]'); }catch{ return []; }
+}
+function setFavIds(ids){
+  try{ localStorage.setItem(LS_FAV, JSON.stringify(ids)); }catch{}
+}
+function isFav(n){ return getFavIds().includes(n); }
+function toggleFav(n){
+  const ids = getFavIds();
+  const i = ids.indexOf(n);
+  if(i>=0) ids.splice(i,1); else ids.push(n);
+  setFavIds(ids);
+}
+
+/* ---------- Verse-of-day logic ---------- */
+function verseForOffset(offsetDays){
+  const d = new Date();
+  d.setDate(d.getDate() + offsetDays);
+  const start = new Date(d.getFullYear(), 0, 0);
+  const dayOfYear = Math.floor((d - start) / 86400000);
+  return VERSES[dayOfYear % VERSES.length];
+}
+function formatArDate(offsetDays=0){
+  const d = new Date();
+  d.setDate(d.getDate() + offsetDays);
+  try{
+    return new Intl.DateTimeFormat('ar-EG', {weekday:'long', day:'numeric', month:'long', year:'numeric'}).format(d);
+  }catch{ return d.toLocaleDateString('ar'); }
+}
+
+/* ---------- Verse card render ---------- */
+function verseCardHTML(v, {compact=false, label=null} = {}){
+  const fav = isFav(v.n);
+  return `
+    <div class="card">
+      <div class="card-top">
+        <span class="ref">${v.reference}</span>
+        <button class="favbtn ${fav?'on':''}" data-favtoggle="${v.n}" aria-label="مفضلة">${ICONS.heart}</button>
+      </div>
+      <p class="vtext ${compact?'compact':''}">${v.text}</p>
+      ${v.theme ? `<div class="theme">✦ ${v.theme}</div>` : ''}
+      ${label ? `<div class="label">${label}</div>` : ''}
+    </div>`;
+}
+
+/* ---------- Pages ---------- */
+function renderToday(){
+  const today = verseForOffset(0);
+  let html = `
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
+      <div>
+        <div style="font-size:.75rem;font-weight:700;color:rgb(var(--secondary));">آية اليوم</div>
+        <div style="font-size:.85rem;color:#94a3b8;margin-top:2px;">${formatArDate(0)}</div>
+      </div>
+      <div style="width:3rem;height:3rem;border-radius:999px;background:rgba(217,175,100,.15);border:1px solid rgba(217,175,100,.3);display:flex;align-items:center;justify-content:center;font-size:1.5rem;">✝</div>
+    </div>
+    ${verseCardHTML(today)}
+    <div style="margin-top:2.5rem;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
+        <h2 style="font-size:1rem;font-weight:700;color:#e2e8f0;margin:0;">من الأيام الماضية</h2>
+        <button data-goto="verses" style="background:none;border:none;color:rgb(var(--primary));font-size:.75rem;font-weight:700;cursor:pointer;">تصفح كل الآيات</button>
+      </div>
+      <div class="stack">
+        ${[-1,-2,-3].map(off => verseCardHTML(verseForOffset(off), {compact:true, label:formatArDate(off)})).join('')}
+      </div>
+    </div>`;
+  document.getElementById('today-content').innerHTML = html;
+}
+
+let versesFilterQ = '';
+let versesFilterTheme = 'الكل';
+
+function renderVerses(){
+  const themes = ['الكل', ...Array.from(new Set(VERSES.map(v=>v.theme).filter(Boolean)))];
+  let list = [...VERSES];
+  if(versesFilterTheme !== 'الكل') list = list.filter(v=>v.theme===versesFilterTheme);
+  if(versesFilterQ.trim()){
+    const s = versesFilterQ.trim();
+    list = list.filter(v => v.text.includes(s) || v.reference.includes(s));
+  }
+  const html = `
+    <h1 class="pagehead font-display">مكتبة الآيات</h1>
+    <p class="pagesub">${VERSES.length} آية مختارة — ابحث بالكلمة أو المرجع</p>
+    <div class="search-wrap">
+      ${ICONS.search}
+      <input id="verse-search" type="text" placeholder="ابحث في الآيات…" value="${versesFilterQ}">
+    </div>
+    <div class="chips">
+      ${themes.map(t => `<button class="chip ${t===versesFilterTheme?'active':''}" data-theme="${t}">${t}</button>`).join('')}
+    </div>
+    ${list.length === 0
+      ? `<div class="empty"><div class="icon">🕊</div><p>لا توجد آيات مطابقة لبحثك</p></div>`
+      : `<div class="stack">${list.map(v => verseCardHTML(v, {compact:true})).join('')}</div>`}
+  `;
+  document.getElementById('verses-content').innerHTML = html;
+  const input = document.getElementById('verse-search');
+  input.addEventListener('input', e => { versesFilterQ = e.target.value; renderVerses(); preserveFocus('verse-search'); });
+  document.querySelectorAll('[data-theme]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{ versesFilterTheme = btn.dataset.theme; renderVerses(); });
+  });
+}
+function preserveFocus(id){
+  const el = document.getElementById(id);
+  if(el){ el.focus(); const v = el.value; el.value=''; el.value=v; }
+}
+
+function renderFavorites(){
+  const ids = getFavIds();
+  const favs = VERSES.filter(v => ids.includes(v.n)).sort((a,b)=>a.n-b.n);
+  const html = `
+    <h1 class="pagehead font-display">الآيات المفضلة</h1>
+    <p class="pagesub">${favs.length>0 ? `${favs.length} آية في مفضلتك` : 'الآيات التي تلمس قلبك تجد طريقها إلى هنا'}</p>
+    ${favs.length===0
+      ? `<div class="empty" style="padding:2.5rem;">
+           <div style="width:4rem;height:4rem;margin:0 auto 1rem;border-radius:999px;background:rgba(251,113,133,.1);border:1px solid rgba(251,113,133,.25);display:flex;align-items:center;justify-content:center;color:#fb7185;">${ICONS.heart}</div>
+           <p style="color:#cbd5e1;margin-bottom:.25rem;">مفضلتك فارغة حتى الآن</p>
+           <p style="font-size:.75rem;color:#64748b;margin-bottom:1.25rem;">اضغط على ♥ بجانب أي آية لتحفظها هنا</p>
+           <button data-goto="verses" class="btn">تصفح الآيات</button>
+         </div>`
+      : `<div class="stack">${favs.map(v => verseCardHTML(v, {compact:true})).join('')}</div>`}
+  `;
+  document.getElementById('favorites-content').innerHTML = html;
+}
+
+/* ---------- Notify page (uses browser Notification API where supported) ---------- */
+function renderNotify(){
+  const savedTime = localStorage.getItem(LS_TIME) || '08:00';
+  const on = localStorage.getItem(LS_NOTIFY_ON) === '1';
+  const supported = 'Notification' in window;
+  const html = `
+    <h1 class="pagehead font-display">التنبيه اليومي</h1>
+    <p class="pagesub">اختر الوقت الذي يناسبك، وسيصلك تذكير بآية اليوم أثناء فتح المتصفح</p>
+
+    <div class="status-card">
+      <div class="status-icon ${on?'on':''}">${on ? ICONS.bell : ICONS.bellOff}</div>
+      <div>
+        <div style="font-size:.9rem;font-weight:700;">${on ? 'التنبيه اليومي مفعّل' : 'التنبيه اليومي غير مفعّل'}</div>
+        <div style="font-size:.75rem;color:#94a3b8;margin-top:2px;">${on ? `يصلك كل يوم حوالي الساعة ${savedTime}` : 'فعّله الآن لتصلك آية كل صباح'}</div>
+      </div>
+    </div>
+
+    <div class="box">
+      <label>وقت التنبيه</label>
+      <div class="rowflex">
+        <input type="time" id="notify-time" value="${savedTime}">
+        <button class="btn" id="notify-toggle-btn">${on ? 'تحديث الموعد' : 'تفعيل التنبيه اليومي'}</button>
+        ${on ? `<button class="btn ghost" id="notify-off-btn">إيقاف</button>` : ''}
+      </div>
+    </div>
+
+    <div class="box">
+      <button class="btn ghost wide" id="notify-test-btn">${ICONS.send} أرسل لي إشعارًا تجريبيًا الآن</button>
+      <p id="notify-test-msg" style="margin:.75rem 0 0;font-size:.75rem;color:#94a3b8;text-align:center;"></p>
+    </div>
+
+    <div id="notify-msg"></div>
+
+    <div class="infobox">
+      ${ICONS.info}
+      <p>${supported
+        ? 'يعتمد وصول الإشعار على إبقاء هذه الصفحة مفتوحة أو مثبّتة على جهازك، وعلى إذن المتصفح بالإشعارات.'
+        : 'متصفحك الحالي لا يدعم إشعارات الويب — جرّب متصفحًا آخر أو ثبّت الصفحة على شاشتك الرئيسية.'}</p>
+    </div>
+  `;
+  document.getElementById('notify-content').innerHTML = html;
+
+  document.getElementById('notify-toggle-btn').addEventListener('click', enableNotify);
+  const offBtn = document.getElementById('notify-off-btn');
+  if(offBtn) offBtn.addEventListener('click', disableNotify);
+  document.getElementById('notify-test-btn').addEventListener('click', sendTestNotify);
+}
+
+let notifyTimerId = null;
+function scheduleNextNotify(time){
+  if(notifyTimerId) clearTimeout(notifyTimerId);
+  const [h,m] = time.split(':').map(Number);
+  const at = new Date();
+  at.setHours(h,m,0,0);
+  if(at <= new Date()) at.setDate(at.getDate()+1);
+  const ms = at - new Date();
+  notifyTimerId = setTimeout(()=>{
+    fireNotification();
+    scheduleNextNotify(time);
+  }, ms);
+}
+function fireNotification(){
+  const v = verseForOffset(0);
+  if('Notification' in window && Notification.permission === 'granted'){
+    try{
+      new Notification('الله الكلمة ✨', { body: `${v.reference} — ${v.text.slice(0,60)}…` });
+    }catch{}
+  }
+}
+async function enableNotify(){
+  const time = document.getElementById('notify-time').value || '08:00';
+  const msgEl = document.getElementById('notify-msg');
+  if(!('Notification' in window)){
+    msgEl.innerHTML = `<div class="msg warn">متصفحك لا يدعم إشعارات الويب في هذا الوضع.</div>`;
+    return;
+  }
+  let perm = Notification.permission;
+  if(perm === 'default'){
+    perm = await Notification.requestPermission();
+  }
+  if(perm !== 'granted'){
+    msgEl.innerHTML = `<div class="msg warn">لم يتم منح إذن الإشعارات. فعّلها من إعدادات المتصفح ثم أعد المحاولة.</div>`;
+    return;
+  }
+  localStorage.setItem(LS_TIME, time);
+  localStorage.setItem(LS_NOTIFY_ON, '1');
+  scheduleNextNotify(time);
+  msgEl.innerHTML = `<div class="msg ok">تم التفعيل! سيصلك تنبيه يوميًا في حوالي ${time} طالما الصفحة مفتوحة.</div>`;
+  renderNotify();
+  document.getElementById('notify-msg').innerHTML = `<div class="msg ok">تم التفعيل! سيصلك تنبيه يوميًا في حوالي ${time} طالما الصفحة مفتوحة.</div>`;
+}
+function disableNotify(){
+  if(notifyTimerId) clearTimeout(notifyTimerId);
+  localStorage.setItem(LS_NOTIFY_ON, '0');
+  renderNotify();
+  document.getElementById('notify-msg').innerHTML = `<div class="msg ok">تم إيقاف التنبيه اليومي.</div>`;
+}
+async function sendTestNotify(){
+  const testEl = document.getElementById('notify-test-msg');
+  if(!('Notification' in window)){
+    testEl.textContent = 'متصفحك لا يدعم إشعارات الويب.';
+    return;
+  }
+  let perm = Notification.permission;
+  if(perm === 'default') perm = await Notification.requestPermission();
+  if(perm !== 'granted'){
+    testEl.textContent = 'لم يتم منح إذن الإشعارات بعد.';
+    return;
+  }
+  try{
+    new Notification('✅ الإشعارات تعمل', { body: 'هكذا سيصلك تنبيه آية كل يوم.' });
+    testEl.textContent = 'وصلك إشعار تجريبي الآن.';
+  }catch{
+    testEl.textContent = 'تعذّر إرسال الإشعار التجريبي.';
+  }
+}
+
+/* ---------- Nav & routing ---------- */
+const TABS = [
+  {id:'today', label:'آية اليوم', icon:'sun', render:renderToday},
+  {id:'verses', label:'الآيات', icon:'book', render:renderVerses},
+  {id:'favorites', label:'المفضلة', icon:'heart', render:renderFavorites},
+  {id:'notify', label:'التنبيه اليومي', icon:'bell', render:renderNotify},
+];
+
+function buildNav(){
+  document.getElementById('sidenav').innerHTML = TABS.map(t =>
+    `<button class="navitem" data-tab="${t.id}">${ICONS[t.icon]}<span>${t.label}</span></button>`
+  ).join('');
+  document.getElementById('tabbar').innerHTML = TABS.map(t =>
+    `<button class="tabitem" data-tab="${t.id}">${ICONS[t.icon]}<span>${t.label}</span></button>`
+  ).join('');
+  document.querySelectorAll('[data-tab]').forEach(btn=>{
+    btn.addEventListener('click', ()=> goTo(btn.dataset.tab));
+  });
+}
+
+function goTo(tabId){
+  TABS.forEach(t=>{
+    document.getElementById('page-'+t.id).classList.toggle('active', t.id===tabId);
+  });
+  document.querySelectorAll('[data-tab]').forEach(el=>{
+    el.classList.toggle('active', el.dataset.tab===tabId);
+  });
+  const tab = TABS.find(t=>t.id===tabId);
+  if(tab) tab.render();
+  location.hash = tabId==='today' ? '' : tabId;
+}
+
+/* Delegate favorite-toggle clicks (cards get re-rendered often) */
+document.addEventListener('click', (e)=>{
+  const favBtn = e.target.closest('[data-favtoggle]');
+  if(favBtn){
+    toggleFav(Number(favBtn.dataset.favtoggle));
+    const activeTab = TABS.find(t => document.getElementById('page-'+t.id).classList.contains('active'));
+    if(activeTab) activeTab.render();
+    return;
+  }
+  const gotoBtn = e.target.closest('[data-goto]');
+  if(gotoBtn){ goTo(gotoBtn.dataset.goto); }
+});
+
+/* ---------- Init ---------- */
+buildNav();
+const initial = (location.hash || '').replace('#','') || 'today';
+goTo(TABS.some(t=>t.id===initial) ? initial : 'today');
+if(localStorage.getItem(LS_NOTIFY_ON) === '1'){
+  scheduleNextNotify(localStorage.getItem(LS_TIME) || '08:00');
+}
+</script>
+</body>
+</html>
